@@ -69,7 +69,7 @@ void renderScene()
 		ModelViewProjection = Projection*View*Model;
 		glUniformMatrix4fv(ModelViewProjectionLoc, 1, GL_FALSE, &ModelViewProjection[0][0]);
 		glUniformMatrix4fv(ModelLoc, 1, GL_FALSE, &Model[0][0]);
-		glUniformMatrix4fv(NormalMatrixLoc, 1, GL_FALSE, &mat4(transpose(inverse(Model*View)))[0][0]);
+		glUniformMatrix4fv(NormalMatrixLoc, 1, GL_FALSE, &mat4(transpose(inverse(Model)))[0][0]);
 		drawCone(texIDs[i%2]);
 	}
 
@@ -104,7 +104,7 @@ void renderScene()
 			ModelViewProjection = Projection*View*Model;
 			glUniformMatrix4fv(ModelViewProjectionLoc, 1, GL_FALSE, &ModelViewProjection[0][0]);
 			glUniformMatrix4fv(ModelLoc, 1, GL_FALSE, &Model[0][0]);
-			glUniformMatrix4fv(NormalMatrixLoc, 1, GL_FALSE, &mat4(transpose(inverse(View*Model)))[0][0]);
+			glUniformMatrix4fv(NormalMatrixLoc, 1, GL_FALSE, &mat4(transpose(inverse(Model)))[0][0]);
 			drawCube(0);
 		}
 	}
