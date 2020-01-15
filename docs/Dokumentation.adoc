@@ -1,0 +1,243 @@
+= Computergrafik 1 - Beleg
+Theresa Schüttig
+:email: s79136@htw-dresden.de
+:title-page:
+:title-logo-image: image:htwlogo.png[HTW, 378, 65]
+:toc:
+:toc-title: Gliederung
+:stem: latexmath
+
+<<<
+
+== Aufgabenbeschreibung
+
+Schreiben Sie ein Programm in C/C++, das unter Verwendung von OpenGL, Vertex- und
+Fragment-Shadern folgende Aufgaben realisiert.
+
+
+=== Aufgabe 1
+Geometrische Objekte: Erzeugen Sie eine interaktive zeitlich animierte Szene mit mehreren
+unterschiedlichen farblichen und texturierten dreidimensionalen geometrischen Objekten.
+
+=== Aufgabe 2
+Beleuchtung: Beleuchten Sie die Szene mit verschiedenartigen Lichtquellen so, dass auf den
+Objekten unterschiedliche Beleuchtungseffekte sichtbar werden.
+
+=== Aufgabe 3
+Ansicht: Stellen Sie die Szene gleichzeitig in verschiedenen Ansichten und Projektionen in
+mehreren Viewports des Anzeigefensters dar.
+
+=== Aufgabe 4
+Programm: Stellen Sie das komplette Programm in Quelltextform als Visual-Studio-C++-
+Projekt und in ausführbarer Form als exe-File derart bereit, dass die Lauffähigkeit auf den
+Computern des Praktikumslabors der Lehrveranstaltung gewährleistet ist.
+
+=== Aufgabe 5
+Dokumentation: Fertigen Sie eine Systemdokumentation in Form eines pdf-Dokumentes von
+etwa 10 Seiten an, die Deckblatt, Gliederung, Aufgabenbeschreibung, Lösungsansatz,
+Lösungsumsetzung, Installations- und Bedienungsanleitung, einige Bildschirm-Snapshots,
+Probleme, Ergebnisse, Literatur- und Quellenverzeichnis enthält.
+
+=== Aufgabe 6
+Abgabe: Demonstrieren Sie die Ergebnisse der Aufgaben 4 und 5 an einem Computer des
+Praktikumslabors der Lehrveranstaltung und übergeben Sie diese in einem Verzeichnis
+„Name_Vorname_Bibliotheksnummer“.
+
+=== Zeitplan
+Die Ausgabe der Aufgabenstellung erfolgt zu Beginn der Lehrveranstaltungszeit. Die Abgabe
+der Ergebnisse erfolgt spätestens zum Ende der Lehrveranstaltungszeit.
+
+<<<
+
+== Lösungsansatz
+
+=== Vorüberlegung
+Das Programm soll 4 Kegel darstellen, die sich mit gleicher Geschwindigkeit und in gleicher Richtung auf einer Kreisbahn bewegen, auf der sie gleichmäßig verteilt sind. Der Radius der Kreisbahn schwankt in Abhängigkeit der Zeit gleichmäßig um einen festen Wert. Die Spitze der Kegel soll dabei stets auf den Mittelpunkt des Kreises gerichtet sein. Zwei der Kegel besitzen eine Holztextur, die anderen zwei Kegel besitzen eine Metalltextur und glänzen zusätzlich. Kegel aus dem gleichen Material befinden sich auf der Kreisbahn gegenüber. 
+
+Die Szene wird durch ein Richtungslicht und 4 verschiedenfarbige Punktlichte, welche als einfarbige Würfel ohne Schatten dargestellt werden, beleuchtet. Jeder Würfel bewegt sich auf einer eigenen Kreisbahn mit festem Radius, die einen Punkt enthält, der Mittelpunkt der Kreisbahn der Kegel ist. Die Ebene, auf der die Kreisbahn einer Lichtquelle liegt und die Ebene der Kreisbahn, auf der die Kegel liegen, sind orthogonal zueinander. Die Schnittpunkte zwischen der Ebene einer Lichtkreisbahn und der Kegelkreisbahn sind gleichmäßig auf der Kegelkreisbahn verteilt. Alle Würfel befinden sich entweder über oder unter (abhängig vom Blickwinkel) der Ebene der Kegelkreisbahn, wenn sie sich auf dessen Mittelpunkt zubewegen. Die Lichtquellen sollen nacheinander mit gleichem Zeitabstand auf diesen Mittelpunkt treffen. 
+
+Die Bewegung aller Objekte erfolgt periodisch und die Größe der Kreisbahnen und Objekte sind so zu wählen, dass zu keinem Zeitpunkt zu einer Überlappung zwischen zwei Objekten kommt. 
+
+Im Fenster sollen vier verschiedene Viewports enthalten sein, von denen jeder die Szene aus einem anderen Blickwinkel darstellt. Es gibt einen einzigen Viewport, dessen Projektion sich von allen anderen Viewports unterscheidet. In einem anderen Viewport kann der Nutzer zoomen und die Szene rotieren.
+
+=== Skizze
+
+<<<
+
+== Lösungsumsetzung
+
+=== Berechnungen
+
+Die Kegel rotieren um die Koordinate (0,0,0) und besitzen folgende Koordinaten: +
+Kegel 1: (x,0,-y) +
+Kegel 2: (y,0,x) +
+Kegel 3: (-x,0,y) +
+Kegel 4: (-y,0,-x) +
+wobei x und y folgendermaßen berechnet werden: +
+//[stem]
+//++++
+x = sin(f(t))⋅(1,025-0,35⋅sin(2⋅f(t))
+y = cos(f(t))⋅(1,025-0.35⋅sin(2⋅f(t))
+//++++
+f(t) ist dabei eine lineare Funktion in Abhängigkeit von der Zeit, welche den Winkel angibt.
+
+[stem]
+++++
+x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
+++++
+
+=== Programmstruktur
+==== Main.cpp
+* *void main( int argc, char *argv )* +
+Nimmt notwendige Initialiserungen zur Nutzung von OpenGL vor, erzeugt ein Fenster und legt Callback-Funktionen fest, die in _Program.cpp_ definiert sind.
+
+==== Program.cpp
+* *void init( )* +
+Generiert Texturen und VAOs, VBOs und Puffer, ermittelt die Positionen der Shader-Variablen, übergibt dem Fragment-Shader die Lichtfarben und aktiviert die Tiefenprüfung.
+
+* *void display( )* +
+Leert den Farb- und Tiefenpuffer, befüllt diesen neu und erzeugt vier quadratische Viewports gleicher Größe. Vor dem Rendern eines Viewports werden die Matrizen _View_ und _Projection_ modifiziert.
+
+* *void renderScene( )* +
+Berechnet einen von der Zeit abhängigen Winkel, der im Schnitt alle 10ms um 1° erhöht wird. Über diesen Winkel werden die Kegel- und Würfelpositionen berechnet. Für jedes Objekt werden die Matrizen _Model_ und _ModelViewProjection_ und _NormalMatrix_ berechnet. Vor dem Rendern der Würfel wird dem Fragment-Shader die Nummer der jeweiligen Lichtquelle über das Setzen von _isLightSource_ übergeben. Nach dem Rendern wird diese Variable wieder auf 0 gestetzt. 
+
+* *void loadTextures( )* +
+Bindet die Texturen, deren Pfade in _texturePaths_ gespeichert sind, an _GL_TEXTURE_2D_.
+
+* *void setViewPoint( )* +
+Berechnet die Matrix _View_ basierend auf der vom Nutzer festgelegten Betrachterposition. Die Betrachterposition wird zudem an den Fragment-Shader übergeben.
+
+* *void reshape( int w, int h )* +
+Aktualisiert die Variablen _width_ und _height_ für die Fenstergröße, wenn diese geändert wird.
+
+* *void timer( int value )* +
+Wird kontinuierlich nach minimal 10ms erneut aufgerufen und leitet den erneuten Aufruf von display ein.
+
+* *void keyboard( unsigned char theKey, int mouseX, int mouseY )* +
+Wird bei Betätigen einer Taste der Tastatur aufgerufen und verändert die Variablen, die Entfernung der Blickposition vom Mittelpunkt der Szene.
+
+* *void special( int specKey, int mouseX, int mouseY )* +
+Wird aufgerufen, wenn eine Funktions- oder Pfeiltaste betätigt wird. Wurde eine Pfeiltaste betätigt, so verändert die Funktion Variablen, die die Blickposition bestimmen.
+
+* *void motion( int mouseX, int mouseY )* +
+Wird bei Mausbewegung aufgerufen, wenn mindestens eine Maustaste gedrückt gehalten wird und verändert Variablen, die die Blickposition bestimmen.
+
+==== Data.hpp
+Enthält die Bezeichner für die VAOs, VBOs und Buffer-Objekte, welche in _Cone.cpp_, _Cube.cpp_ und _Program.cpp_ verwendet werden.
+
+==== Cube.cpp
+* *void generateCube( )* +
+Erzeugt die Würfel- und Texturkoordinaten sowie Normalenvektoren, bindet diese an den _GL_ARRAY_BUFFER_ und aktiviert die Attributarrays für den Vertex-Shader.
+* *void drawCube( int texID )* +
+Rendert einen Würfel mit der Textur, der _texID_ als Bezeichner zugewiesen wurde.
+
+==== Cone.cpp
+* *void generateCone( )* +
+Erzeugt die Kegel- und Texturkoordinaten sowie Normalenvektoren, bindet diese an den _GL_ARRAY_BUFFER_ und aktiviert die Attributarrays für den Vertex-Shader.
+* *void drawCone( int texID )* +
+Rendert einen Kegel mit der Textur, der _texID_ als Bezeichner zugewiesen wurde.
+* *void calcConeTexCoords( float h, float r, float vertices[ ][2] )* + 
+Berechnet die Texturkoordinaten für einen Kegel mit der Höhe _h_ und dem Radius _r_ und speichert diese im Array _vertices_, welches mindestens eine Größe von 12*_NumVertices_ besitzen muss.
+
+==== LoadShader.cpp
+* *GLuint loadShaders( const char *vertexFilePath, const char *fragmentFilePath )* +
+Kompiliert den Vertex- und Fragment-Shader, deren Pfade als Parameter übergeben werden.
+
+==== main.vs
+===== Funktionen
+* *void main( )* +
+Berechnet _gl_Position_ und übergibt dem Fragment-Shader den Normalenvektor und Textur- und Vertexkoordinaten.
+
+==== main.fs
+* *void main( )* + 
+Addiert die Lichter aller Lichtquellen, wenn _isLightSource_ = 0  und legt das Ergebnis als Farbe des Fragments fest. Andernfalls erhält das Fragment die eine leicht aufgehellte Variante der Farbe der Lichtquelle.
+
+* *vec3 calcLight( int lightID )* +
+Berechnet den ambienten, diffusen und spekularen Anteil der Lichtquelle mit der Bezeichnung _lightID_. Gilt _useSpecularLight_ = 0, so wird der spekulare Anteil auf 0 gesetzt. Falls _lightID_ = 4 gilt, so wird _lightDir_ als Richtungsvektor des Lichts verwendet, andernfalls wird dieser über die Lichtposition ( _lightPos[lightID]_ ) und die Fragmentposition (_FragPos_) ermittelt. Zurückgegeben wird das Produkt aus der Texturfarbe und der Summe des ambienten, diffusen und spekularen Anteils.
+
+<<<
+
+== Installation
+
+Unabhängig vom Betriebssystem müssen vor der Installation die Bibliotheken _OpenGL_, _GLUT_, _GLM_ und _FreeImage_ installiert werden. Die ausführbare Datei befindet sich nach der Installation im Verzeichnis _bin_.
+
+=== Windows
+Unter Windows kann die Projektionmappendatei mit Visual Studio Community geöffnet und über ... kompiliert werden.
+
+=== Linux
+Unter Linux kann das Programm über das Kommando _make_ installiert werden. Der Nutzer muss sich dafür im Verzeichnis _src_ befinden.
+
+<<<
+
+== Bedienung
+
+=== Entfernen und Wiederhinzufügen von Lichtquellen
+Jedes Punktlicht kann durch das Betätigen einer bestimmten Taste entfernt oder wieder hinzugefügt werden. Für jede Lichtquelle
+kann dieser Vorgang beliebig oft wiederholt werden.
+
+[%header]
+|===
+|Taste | Farbe der Lichtquelle
+| R | rot
+| O | orange
+| G | gelb
+| B | blau
+|===
+
+=== Rotieren und Zoomen in der Szene
+Im linken oberen Viewport kann der Nutzer in der Szene zoomen und rotieren. Das Zooming erfolgt über die Pfeiltasten
+oder über das Gedrückthalten einer Maustaste mit gleichzeitigem Bewegen der Maus.
+In Richtung Mittelpunkt kann über die V-Taste gezoomt werden, das Herauszoomen erfolgt über die Z-Taste.
+
+=== Beenden des Programms
+Das Programm kann über das Schließen des Fensters oder das Betätigen der E-Taste beendet werden.
+
+<<<
+
+== Screenshots
+
+.Alle Viewports mit allen Lichtquellen
+[caption="", center]
+image::scrshot2.jpg[1,400,400]
+
+.Rechter unterer Viewport ohne rotes und oranges Punktlicht
+[caption=""]
+image::scrshot3.jpg[2,400,400]
+
+.Linker oberer Viewport ohne Punktlichter
+[caption=""]
+image::scrshot1.jpg[3,400,400]
+
+
+<<<
+
+== Probleme
+=== Keine nahtlose Texturierung der Kegel
+Auf der Mantelfläche und zwischen Mantel- und Grundfläche befinden sich Nahtstellen. Diese könnte man entfernen, indem man unter Verwendung der vom Programm erstellten Texturkoordinaten eine speziell für die Kegel nahtlose Textur erstellt.
+
+=== Objekte werfen keinen Schatten
+Die in der Szene dargestellten Objekte werfen keinen Schatten auf ein anderes Objekt, wenn sie sich zwischen diesem und einer Lichtquelle befinden, woraus ein Verlust von Realismus folgt. Zur Lösung des Problems bietet sich der Einsatz von Shadow-Mapping an.
+
+=== Blick in das Innere der Objekte möglich
+Durch geschicktes Zoomen und Rotieren der Szene kann der Betrachter die Blickposition in das Innere eines Objektes verschieben, was im Idealfall nicht möglich sein sollte. +
+Um dies zu verhindern, kann im Hauptprogramm überprüft werden, ob die Position des Betrachters bei Veränderung mit einem der Objekte kollidiert. Liegt eine Kollision vor, so wird die Änderung nicht vorgenommen.
+
+<<<
+
+== Ergebnisse
+
+<<<
+
+== Literatur- und Quellenverzeichnis
+
+=== Literatur
+* OpenGL Programming Guide, Addison Wesley, 2013, 8. Auflage
+* Vorlesungsskript
+* https://learnopengl.com/
+
+=== Quellcode
+* einzelne Funktionen: Praktikumsunterlagen
+
+=== Bilder
+* Holztextur: https://pixabay.com/photos/wood-tree-spruce-picea-conifer-3212803/
+* Metalltextur: https://pixabay.com/photos/background-texture-metal-scratches-1172581/

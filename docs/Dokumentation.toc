@@ -1,0 +1,24 @@
+\babel@toc {ngerman}{}
+\contentsline {section}{\numberline {1}Aufgabenbeschreibung}{3}% 
+\contentsline {section}{\numberline {2}L\IeC {\"o}sungsansatz}{4}% 
+\contentsline {subsection}{\numberline {2.1}Vor\IeC {\"u}berlegung}{4}% 
+\contentsline {subsection}{\numberline {2.2}Skizze}{5}% 
+\contentsline {section}{\numberline {3}L\IeC {\"o}sungsumsetzung}{6}% 
+\contentsline {subsection}{\numberline {3.1}Berechnungen}{6}% 
+\contentsline {subsection}{\numberline {3.2}Programmstruktur}{7}% 
+\contentsline {section}{\numberline {4}Installation}{10}% 
+\contentsline {subsection}{\numberline {4.1}Windows}{10}% 
+\contentsline {section}{\numberline {5}Bedienung}{10}% 
+\contentsline {subsection}{\numberline {5.1}Entfernen und Wiederhinzuf\IeC {\"u}gen von Lichtquellen}{10}% 
+\contentsline {subsection}{\numberline {5.2}Rotieren und Zoomen}{10}% 
+\contentsline {subsection}{\numberline {5.3}Beenden des Programms}{10}% 
+\contentsline {section}{\numberline {6}Screenshots}{11}% 
+\contentsline {section}{\numberline {7}Probleme}{12}% 
+\contentsline {subsection}{\numberline {7.1}Keine nahtlose Texturierung}{12}% 
+\contentsline {subsection}{\numberline {7.2}Kein Schattenwurf}{12}% 
+\contentsline {subsection}{\numberline {7.3}Blick in das Innere der Objekte m\IeC {\"o}glich}{12}% 
+\contentsline {section}{\numberline {8}Ergebnisse}{13}% 
+\contentsline {section}{\numberline {9}Literatur- und Quellenverzeichnis}{14}% 
+\contentsline {subsection}{\numberline {9.1}Literatur}{14}% 
+\contentsline {subsection}{\numberline {9.2}Quellcode}{14}% 
+\contentsline {subsection}{\numberline {9.3}Bilder}{14}% 
